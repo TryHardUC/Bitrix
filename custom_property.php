@@ -1,24 +1,27 @@
 <?php
-
+// Импорт необходимых классов Bitrix
 use Bitrix\Main\Loader;
 use Bitrix\Main\UserField\Types\StringType;
 use Bitrix\Main\UserField\Types\FileType;
 use Bitrix\Main\UserField\Types\HTMLType;
 
+// Создание пользовательского типа свойства
 class CustomUserType extends \CUserTypeString
 {
-    const USER_TYPE_ID = 'custom_property';
+    const USER_TYPE_ID = 'custom_property'; // Уникальный идентификатор пользовательского типа свойства
 
+    // Описание пользовательского типа свойства
     public static function GetUserTypeDescription()
     {
         return array(
             'USER_TYPE_ID' => self::USER_TYPE_ID,
-            'CLASS_NAME' => __CLASS__,
-            'DESCRIPTION' => 'Файл + Строка + HTML/Text',
-            'BASE_TYPE' => StringType::USER_TYPE_ID,
+            'CLASS_NAME' => __CLASS__, // Имя текущего класса
+            'DESCRIPTION' => 'Файл + Строка + HTML/Text', // Описание пользовательского типа
+            'BASE_TYPE' => StringType::USER_TYPE_ID, // Базовый тип данных (в данном случае, строка)
         );
     }
 
+    // Определение типа колонки в базе данных в зависимости от используемой СУБД
     public static function GetDBColumnType($userField)
     {
         global $DB;
@@ -33,10 +36,11 @@ class CustomUserType extends \CUserTypeString
         return 'text';
     }
 
+    // Отображение поля редактирования в административной части
     public static function GetEditFormHTML($userField, $htmlControl)
     {
-        $value = htmlspecialcharsbx($htmlControl['VALUE']);
-        ob_start();
+        $value = htmlspecialcharsbx($htmlControl['VALUE']); // Значение свойства, экранированное для вывода
+        ob_start(); // Начало буферизации вывода
 ?>
         <tr>
             <td>
@@ -44,24 +48,27 @@ class CustomUserType extends \CUserTypeString
             </td>
         </tr>
     <?php
-        return ob_get_clean();
+        return ob_get_clean(); // Завершение буферизации и возврат содержимого
     }
 
+    // Отображение значения в административном списке
     public static function GetAdminListViewHTML($userField, $htmlControl)
     {
-        $value = htmlspecialcharsbx($htmlControl['VALUE']);
+        $value = htmlspecialcharsbx($htmlControl['VALUE']); // Значение свойства, экранированное для вывода
         return $value;
     }
 
+    // Отображение поля редактирования в административном списке
     public static function GetAdminListEditHTML($userField, $htmlControl)
     {
-        $value = htmlspecialcharsbx($htmlControl['VALUE']);
+        $value = htmlspecialcharsbx($htmlControl['VALUE']); // Значение свойства, экранированное для вывода
         return '<input type="text" name="' . $htmlControl['NAME'] . '" value="' . $value . '" size="20">';
     }
 
+    // Отображение поля редактирования множественных свойств в административной части
     public static function GetEditFormHTMLMulty($userField, $htmlControl)
     {
-        ob_start();
+        ob_start(); // Начало буферизации вывода
         $value = '';
         if (is_array($htmlControl['VALUE'])) {
             $value = $htmlControl['VALUE']['TEXT'];
@@ -73,9 +80,10 @@ class CustomUserType extends \CUserTypeString
             </td>
         </tr>
     <?php
-        return ob_get_clean();
+        return ob_get_clean(); // Завершение буферизации и возврат содержимого
     }
-
+    
+    // Дополнительные методы
     public static function GetAdminListViewHTMLMulty($userField, $htmlControl)
     {
         $value = '';
@@ -222,4 +230,5 @@ class CustomUserType extends \CUserTypeString
     }
 }
 
+// Регистрация обработчика пользовательских типов свойств
 AddEventHandler('main', 'OnUserTypeBuildList', array('CustomUserType', 'GetUserTypeDescription'));
